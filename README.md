@@ -1,35 +1,7 @@
-# Hubot Example
+# Hammersport for Hubot
 
-An example script package for Hubot
+A co-worker of mine once passed through a town called Hammondsport on his trips home. This led him to idly invent an extreme sport called "hammersport". In his words:
 
-[![Build Status](https://travis-ci.org/hubot-scripts/hubot-example.png)](https://travis-ci.org/hubot-scripts/hubot-example)
+> "Two combatants enter the chalk circle, bound together at the wrist. In each of their other hands is a claw hammer. It's over when there's a winner."
 
-## Directory Structure
-
-Using the common directory structure for hubot script packages it will be easy
-to manage and allow others to easily contribute to your package.
-
-### script
-
-This directory is home to a couple of development scripts; `bootstrap` and `test`
-they're used to bootstrap the development environment and run tests
-respectively.
-
-### src
-
-This directory is home to the actual hubot scripts in the package. Your
-`index.coffee` entry point will load the scripts from this directory.
-
-### test
-
-This directory is home to any tests you write for your scripts. This example
-package uses Mocha, Chai and Sinon to manage writing tests.
-
-## Advantages of Building a Package
-
-Some of the advantages of building an npm package for your hubot script(s) are:
-
-* You don't need to rely on when hubot-scripts package is released.
-* You can specify dependencies in the `package.json` rather than have users
-  manually specify them
-* You can easily add tests using your favourite frameworks and libraries
+So, naturally, we made a mini role-playing game out of it. And, naturally, I'm porting it to Hubot.
