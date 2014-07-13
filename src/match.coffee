@@ -1,3 +1,5 @@
+_ = require 'underscore'
+
 # Internal: The current state of an active hammersport match.
 #
 class State
@@ -18,7 +20,7 @@ class State
 
   # Internal: A command has been attempted in the wrong state. Report an error and do nothing.
   #
-  _badState: (actionName, msg) -> @match.wth "You can't #{actionName} now!"
+  _badState: (actionName, msg) -> @match.wth msg, "You can't #{actionName} now!"
 
 # Internal: A challenge has been offered. If *accepted*, the round will begin and the match will
 # advance to AwaitingMoveState. If *declined* or *timedout*, the match is over.
@@ -80,6 +82,13 @@ class AwaitingMoveState extends State
       @match.endRound msg, @choices
     else
       @match.intermediateAttack msg
+
+  roundTimeout: (msg) ->
+    for c in @match.challengers
+      unless @choices[c.id()]?
+        @choices[c.id()] = _.random @moveMap[c.id()].length - 1
+
+    @match.endRound msg, @choices
 
 # Public: An active match of hammersport. Implemented as a state machine that maps *commands* to
 # *actions* that mutate the Match or Challengers.
@@ -206,7 +215,7 @@ class Match
       target: null
       output: (line) -> lines.push line
 
-    for uid, move in chosenMove
+    for uid, move in chosenMoves
       attacker = @challengerMap[uid]
       for target in @challengers
         if target isnt attacker
