@@ -1,3 +1,6 @@
+Match = require './match'
+Challenger = require './challenger'
+
 # Track global state for the hammersport game: the challenger index, matches in progress, and the
 # attack index. Manages persistence to and from the brain.
 #

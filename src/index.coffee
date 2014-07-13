@@ -17,6 +17,8 @@
 # Author:
 #   smashwilson
 
+ChalkCircle = require './chalkcircle'
+
 module.exports = (robot) ->
 
   robot.respond /hammersport challenge (\S+)/i, (msg) ->
