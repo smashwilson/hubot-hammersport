@@ -1,22 +1,24 @@
 # Description:
-#   Say Hi to Hubot.
+#   Challenge
 #
 # Dependencies:
 #   None
 #
 # Configuration:
-#   None
+#   HUBOT_HAMMERSPORT_ROOMS - comma-separated list of rooms to restrict hammersport chatter to.
+#   HUBOT_HAMMERSPORT_ATTACKS - path to a file containing available attacks.
 #
 # Commands:
-#   hubot hello - "hello!"
-#   hubot orly - "yarly"
+#   hubot hammersport challenge <user> - Challenge another user to a duel
+#   hubot hammersport accept - Accept a challenge.
+#   hubot hammersport decline - Decline a challenge.
+#   hubot hammer <n> - Choose an attack during a hammersport round.
 #
 # Author:
-#   tombell
+#   smashwilson
 
 module.exports = (robot) ->
-  robot.respond /hello/, (msg) ->
-    msg.reply "hello!"
 
-  robot.hear /orly/, ->
-    msg.send "yarly"
+  robot.respond /hammersport challenge (\S+)/i, (msg) ->
+
+  robot.respond /hammer (\d)/i, (msg) ->
