@@ -9,4 +9,10 @@ class ChalkCircle
 
   botName: -> @name
 
+  challengeTimeout: -> 300000 # 5 minutes
+
+  roundTimeout: -> 300000 # 5 minutes
+
+  endMatch: (match) -> @match = null if @match is match
+
 module.exports = ChalkCircle

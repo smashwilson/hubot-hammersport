@@ -3,11 +3,16 @@
 class Challenger
 
   constructor: (@user) ->
+    @hp = 50
 
   id: -> @user.id
 
   displayName: -> "@#{@user.name}"
 
-  moveChoices: (chalkCircle) -> []
+  moveChoices: (chalkCircle) -> [
+    new Move('One')
+    new Move('Two')
+    new Move('Three')
+  ]
 
 module.exports = Challenger

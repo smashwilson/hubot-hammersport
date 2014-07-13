@@ -4,6 +4,8 @@ class State
 
   constructor: (@match) ->
 
+  reset: -> throw new Error("You can't reset a #{@constructor.name}")
+
   challengeAccepted: (msg) -> @_badState "accept a challenge", msg
 
   challengeDeclined: (msg) -> @_badState "decline a challenge", msg
@@ -11,6 +13,8 @@ class State
   challengeTimeout: (msg) ->
 
   chooseMove: (msg) -> @_badState "choose a move", msg
+
+  roundTimeout: (msg) ->
 
   # Internal: A command has been attempted in the wrong state. Report an error and do nothing.
   #
@@ -43,8 +47,9 @@ class ChallengeOfferedState extends State
 
   challengeDeclined: (msg) ->
     @accepted[msg.message.user.id] = false
+    @match.matchDecline msg
 
-    # FIXME need a response to call here.
+  challengeTimeout: (msg) -> @match.matchDecline msg
 
 # Internal: A round is active and the Challengers have been issued lists of potential moves. One
 # or both Challengers have yet to select a move. When a *move* is chosen, if not all Challengers
@@ -56,9 +61,25 @@ class AwaitingMoveState extends State
 
   constructor: (match, @moveMap) ->
     super match
-    @choices = {}
+    @reset()
+
+  reset: -> @choices = {}
 
   chooseMove: (msg) ->
+    uid = msg.message.user.id
+    moveIndex = parseInt msg.match[1]
+
+    moves = @moveMap[uid]
+    if moveIndex < 0 or moveIndex >= moves.length
+      @match.wth msg, "#{moveIndex} isn't a valid move!"
+      return
+
+    @choices[uid] = moves[moveIndex]
+
+    if Object.keys(@choices).length >= @match.challengers.length
+      @match.endRound msg, @choices
+    else
+      @match.intermediateAttack msg
 
 # Public: An active match of hammersport. Implemented as a state machine that maps *commands* to
 # *actions* that mutate the Match or Challengers.
@@ -73,7 +94,9 @@ class Match
   constructor: (@chalkCircle, @challengers) ->
     @round = 1
     @state = new ChallengeOfferedState(this)
-    @challengerIds = (c.id() for c in @challengers)
+
+    @challengerMap = {}
+    @challengerMap[c.id()] = c for c in @challengers
 
   # ACTIONS
   # These methods are invoked by user interactions and dispatched to the appropriate State.
@@ -94,12 +117,20 @@ class Match
 
   # Public: Action - the second Challenger has failed to respond before the challenge timed out.
   #
-  challengeTimeout: (msg) -> @state.challengeTimeout msg
+  challengeTimeout: (msg) ->
+    @activeTimeout = null
+    @state.challengeTimeout msg
 
   # Public: Action - a Challenger has chosen a Move from the offered list.
   #
   chooseMove: (msg) ->
     @_validateUser(msg) and @state.chooseMove msg
+
+  # Public: Action - at least one Challenger has neglected to choose a move before the time was up.
+  #
+  roundTimeout: (msg) ->
+    @activeTimeout = null
+    @state.roundTimeout msg
 
   # RESPONSES
   # State subclasses invoke these methods to report progress and advance.
@@ -116,13 +147,23 @@ class Match
       `#{@chalkcircle.botName()} hammersport decline` to wuss out."
     msg.send challenge
 
+    @activeTimeout = setTimeout(=> @challengeTimeout(msg), @chalkCircle.challengeTimeout())
+
   # Internal: Some Challengers have accepted, but others have not. Print a message to accept.
   #
   intermediateAccept: (msg) -> msg.reply "You're in. Waiting for the rest..."
 
+  # Internal: The match was not accepted.
+  #
+  matchDecline: (msg) ->
+    msg.reply "buck buck buck buck :chicken:"
+    @chalkCircle.endMatch this
+
   # Internal: All Challengers have accepted. Print a message before the first round starts.
   #
-  itBegins: (msg) -> msg.send 'IT BEGINS!'
+  itBegins: (msg) ->
+    clearTimeout(@activeTimeout) if @activeTimeout?
+    msg.send 'IT BEGINS!'
 
   # Internal: Choose the next batch of attacks from the attack registry and report them to each
   # challenger.
@@ -144,13 +185,41 @@ class Match
     @state = new AwaitingMoveState(this, moveMap)
     @msg.send message
 
+    @activeTimeout = setTimeout(=> @roundTimeout(msg), @chalkCircle.roundTimeout())
+
   # Internal: Accept an attack for a Challenger while there are others pending.
   #
-  intermediateAttack: (msg) ->
+  intermediateAttack: (msg) -> msg.reply "Move chosen."
 
-  # Internal: Enact all chosen attacks and report their results.
+  # Internal: Enact all chosen moves and report their results.
   #
-  endRound: (msg) ->
+  endRound: (msg, chosenMoves) ->
+    clearTimeout(@activeTimeout) if @activeTimeout?
+    lines = []
+
+    moveContext =
+      chalkCircle: @chalkCircle
+      match: this
+      attacker: null
+      target: null
+      output: (line) -> lines.push line
+
+    for own uid, move in chosenMove
+      attacker = @challengerMap[uid]
+      for target in @challengers
+        if target isnt attacker
+          moveContext.attacker = attacker
+          moveContext.target = target
+          move.perform moveContext
+
+      if @_winner()
+        @_reportResults msg
+        @_endMatch()
+        return
+
+    @round += 1
+    msg.send lines.join("\n")
+
 
   # Internal: Someone tried a command in the wrong State. Chastise them appropriately.
   #
@@ -159,13 +228,37 @@ class Match
   # UTILITIES
   # For use by multiple responses.
 
+  # Internal: Return the collection of winning Challengers, possibly empty.
+  #
+  _winner: ->
+    stillAlive = (c for c in @challengers when c.hp > 0)
+    if stillAlive.length <= 1 then stillAlive else null
+
+  # Internal: Report the results of the match.
+  #
+  _reportResults: (msg) ->
+    ws = @_winner()
+    message = switch ws.length
+                when 0 then "Nobody wins. Brutal."
+                when 1 then "#{ws[0].displayName()} is the victor!"
+                else throw new Error("#{ws.length} winners?! That's not how this works.")
+
+    # TODO award EXP and report unlocks
+    # TODO respawn the defeated
+
+    msg.send message
+
+  _endMatch: ->
+    clearTimeout(@activeTimeout) if @activeTimeout?
+    @chalkCircle.endMatch this
+
   # Internal: Ensure that the user who's running a command is actually participating.
   #
   _validateUser: (msg) ->
-    if msg.message.user.id in @match.challengerIds
+    if @challengerMap[msg.message.user.id]?
       true
     else
-      @match.wth msg, "You're just spectating right now."
+      msg.reply "You're just spectating right now."
       false
 
 module.exports = Match

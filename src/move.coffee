@@ -6,4 +6,7 @@ class Move
 
   name: -> @name
 
+  perform: (context) ->
+    context.output "#{context.attacker.displayName()} uses #{@name}. It's super effective!"
+
 module.exports = Move
