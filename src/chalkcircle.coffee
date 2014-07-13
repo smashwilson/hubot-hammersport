@@ -11,8 +11,8 @@ class ChalkCircle
     @match = null
 
     # Initialize storage structures.
-    @storage = robot.brain.data.hammersport ?= {}
-    @storage.challengers ?= {}
+    @storage = -> robot.brain.data.hammersport ?= {}
+    @storage().challengers ?= {}
 
   botName: -> @name
 
@@ -44,7 +44,7 @@ class ChalkCircle
   # Public: Access or create a Challenger corresponding to a Hubot User.
   #
   getChallenger: (user) ->
-    cdata = @storage.challengers[user.id] ?= {}
+    cdata = @storage().challengers[user.id] ?= {}
     new Challenger(user, cdata)
 
 module.exports = ChalkCircle
