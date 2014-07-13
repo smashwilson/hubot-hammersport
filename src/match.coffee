@@ -27,14 +27,14 @@ class ChallengeOfferedState extends State
 
   constructor: (match) ->
     super match
-    @accepted =
-      match.challengers.first.id: true
+    @accepted = {}
+    @accepted[match.challengers.first.id] = true
 
   challengeAccepted: (msg) ->
     uid = msg.message.user.id
 
     if @accepted[uid]
-      @match.wtf msg, "You've already accepted!"
+      @match.wth msg, "You've already accepted!"
       return
 
     @accepted[uid] = true
@@ -143,11 +143,12 @@ class Match
     challenge = (c.displayName() for c in rest).join(", ")
     challenge += (if rest.length > 1 then 'have' else 'has')
     challenge += " been challenged by #{first.displayName()}!
-      `#{@chalkcircle.botName()} hammersport accept` to accept the challenge.
-      `#{@chalkcircle.botName()} hammersport decline` to wuss out."
+      `#{@chalkcircle.botName()} hammer accept` to accept the challenge.
+      `#{@chalkcircle.botName()} hammer decline` to wuss out."
     msg.send challenge
 
-    @activeTimeout = setTimeout(=> @challengeTimeout(msg), @chalkCircle.challengeTimeout())
+    fn = => @challengeTimeout(msg)
+    @activeTimeout = setTimeout(fn, @chalkCircle.challengeTimeout())
 
   # Internal: Some Challengers have accepted, but others have not. Print a message to accept.
   #
@@ -185,7 +186,8 @@ class Match
     @state = new AwaitingMoveState(this, moveMap)
     @msg.send message
 
-    @activeTimeout = setTimeout(=> @roundTimeout(msg), @chalkCircle.roundTimeout())
+    fn = => @roundTimeout(msg)
+    @activeTimeout = setTimeout(fn, @chalkCircle.roundTimeout())
 
   # Internal: Accept an attack for a Challenger while there are others pending.
   #
@@ -204,7 +206,7 @@ class Match
       target: null
       output: (line) -> lines.push line
 
-    for own uid, move in chosenMove
+    for uid, move in chosenMove
       attacker = @challengerMap[uid]
       for target in @challengers
         if target isnt attacker

@@ -24,7 +24,7 @@ class ChalkCircle
   #
   # challengers - The Challengers involved in this match, initiator first.
   #
-  startMatch: (challengers...) -> @match = new Match(this, challengers)
+  startMatch: (challengers) -> @match = new Match(this, challengers)
 
   # Public: End an active Match.
   #
