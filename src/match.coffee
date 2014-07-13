@@ -28,7 +28,7 @@ class ChallengeOfferedState extends State
   constructor: (match) ->
     super match
     @accepted = {}
-    @accepted[match.challengers.first.id] = true
+    @accepted[match.challengers[0].id()] = true
 
   challengeAccepted: (msg) ->
     uid = msg.message.user.id
@@ -141,10 +141,10 @@ class Match
   throwDownTheGlove: (msg) ->
     [first, rest...] =  @challengers
     challenge = (c.displayName() for c in rest).join(", ")
-    challenge += (if rest.length > 1 then 'have' else 'has')
+    challenge += (if rest.length > 1 then ' have' else ' has')
     challenge += " been challenged by #{first.displayName()}!
-      `#{@chalkcircle.botName()} hammer accept` to accept the challenge.
-      `#{@chalkcircle.botName()} hammer decline` to wuss out."
+      `#{@chalkCircle.botName()} hammer accept` to accept the challenge.
+      `#{@chalkCircle.botName()} hammer decline` to wuss out."
     msg.send challenge
 
     fn = => @challengeTimeout(msg)
@@ -184,7 +184,7 @@ class Match
       moveMap[c.id()] = choices
 
     @state = new AwaitingMoveState(this, moveMap)
-    @msg.send message
+    msg.send message
 
     fn = => @roundTimeout(msg)
     @activeTimeout = setTimeout(fn, @chalkCircle.roundTimeout())

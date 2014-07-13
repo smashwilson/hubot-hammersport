@@ -36,11 +36,24 @@ module.exports = (robot) ->
     m = theCircle.startMatch(challengers)
     m.challengeOffered msg
 
-  robot.respond /hammersport accept/i, (msg) ->
+  robot.respond /hammer accept/i, (msg) ->
     theCircle.withActiveMatch msg, (m) -> m.challengeAccepted msg
 
-  robot.respond /hammersport decline/i, (msg) ->
+  robot.respond /hammer decline/i, (msg) ->
     theCircle.withActiveMatch msg, (m) -> m.challengeDeclined msg
 
   robot.respond /hammer (\d)/i, (msg) ->
     theCircle.withActiveMatch msg, (m) -> m.chooseMove msg
+
+  if process.env.HUBOT_DEBUG?
+    robot.respond /hammer setup/i, (msg) ->
+      user = robot.brain.userForId '2',
+        name: 'someone'
+        room: 'thechalkcircle'
+      theCircle.getChallenger(user)
+      msg.reply "Ready."
+
+    robot.respond /hammer proxyaccept (\S+)/i, (msg) ->
+      user = robot.brain.userForName msg.match[1]
+      msg.message.user = user
+      theCircle.withActiveMatch msg, (m) -> m.challengeAccepted msg

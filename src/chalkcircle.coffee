@@ -44,7 +44,7 @@ class ChalkCircle
   # Public: Access or create a Challenger corresponding to a Hubot User.
   #
   getChallenger: (user) ->
-    @storage.challengers[user.id] ?= {}
-    new Challenger(user, @storage)
+    cdata = @storage.challengers[user.id] ?= {}
+    new Challenger(user, cdata)
 
 module.exports = ChalkCircle

@@ -1,3 +1,5 @@
+Move = require './move'
+
 # A participant in the hammersportening.
 #
 class Challenger

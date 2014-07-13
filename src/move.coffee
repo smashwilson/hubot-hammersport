@@ -2,9 +2,9 @@
 #
 class Move
 
-  constructor: (@name) ->
+  constructor: (@_name) ->
 
-  name: -> @name
+  name: -> @_name
 
   perform: (context) ->
     context.output "#{context.attacker.displayName()} uses #{@name}. It's super effective!"
