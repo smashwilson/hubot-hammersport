@@ -2,10 +2,17 @@
 #
 class Challenger
 
-  constructor: (@user) ->
-    @hp = 50
+  constructor: (@user, @storage) ->
+    @storage.hp ?= 50
+    @storage.exp ?= 0
 
   id: -> @user.id
+
+  hp: -> @_storage().hp
+
+  damage: (amount) -> @_storage().hp -= amount
+
+  heal: (amount) -> @_storage().hp += amount
 
   displayName: -> "@#{@user.name}"
 

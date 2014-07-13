@@ -231,7 +231,7 @@ class Match
   # Internal: Return the collection of winning Challengers, possibly empty.
   #
   _winner: ->
-    stillAlive = (c for c in @challengers when c.hp > 0)
+    stillAlive = (c for c in @challengers when c.hp() > 0)
     if stillAlive.length <= 1 then stillAlive else null
 
   # Internal: Report the results of the match.

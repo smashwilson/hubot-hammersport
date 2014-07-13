@@ -10,6 +10,10 @@ class ChalkCircle
     @name = robot.name
     @match = null
 
+    # Initialize storage structures.
+    @storage = robot.brain.data.hammersport ?= {}
+    @storage.challengers ?= {}
+
   botName: -> @name
 
   challengeTimeout: -> 300000 # 5 minutes
@@ -18,10 +22,14 @@ class ChalkCircle
 
   # Public: Initiate a new match.
   #
-  # challengerNames - Sanitized names of each prospective Challenger. Initiator is first.
+  # challengers - The Challengers involved in this match, initiator first.
   #
-  startMatch: (challengerNames...) ->
+  startMatch: (challengers...) -> @match = new Match(this, challengers)
 
+  # Public: End an active Match.
+  #
+  # match - The Match to end.
+  #
   endMatch: (match) -> @match = null if @match is match
 
   # Public: Invoke a callback function with the active Match, if one exists. Report an error
@@ -32,5 +40,11 @@ class ChalkCircle
       callback(@match)
     else
       msg.reply "You can't do that when there's no match underway!"
+
+  # Public: Access or create a Challenger corresponding to a Hubot User.
+  #
+  getChallenger: (user) ->
+    @storage.challengers[user.id] ?= {}
+    new Challenger(user, @storage)
 
 module.exports = ChalkCircle

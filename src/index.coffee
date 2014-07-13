@@ -24,6 +24,17 @@ module.exports = (robot) ->
   theCircle = new ChalkCircle(robot)
 
   robot.respond /hammersport challenge (\S+)/i, (msg) ->
+    challengers = for username in [msg.message.user.name, msg.match[1]]
+      username = username.replace /^@/, ''
+      user = robot.brain.userForName username
+      if user?
+        theCircle.getChallenger(user)
+      else
+        msg.reply "
+          I don't know anyone named #{username}!
+          Notice that they have to speak first, for me to notice them."
+        return
+
     m = theCircle.startMatch(msg.message.user.name, msg.match[1])
     m.challengeOffered msg
 
