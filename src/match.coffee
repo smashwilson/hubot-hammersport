@@ -86,7 +86,8 @@ class AwaitingMoveState extends State
   roundTimeout: (msg) ->
     for c in @match.challengers
       unless @choices[c.id()]?
-        @choices[c.id()] = _.random @moveMap[c.id()].length - 1
+        available = @moveMap[c.id()]
+        @choices[c.id()] = available[_.random available.length - 1]
 
     @match.endRound msg, @choices
 
@@ -151,10 +152,13 @@ class Match
     [first, rest...] =  @challengers
     challenge = (c.displayName() for c in rest).join(", ")
     challenge += (if rest.length > 1 then ' have' else ' has')
-    challenge += " been challenged by #{first.displayName()}!
-      `#{@chalkCircle.botName()} hammer accept` to accept the challenge.
-      `#{@chalkCircle.botName()} hammer decline` to wuss out."
-    msg.send challenge
+    challenge += " been challenged by #{first.displayName()}!"
+    lines = [
+      challenge,
+      "`#{@chalkCircle.botName()} hammer accept` to accept the challenge."
+      "`#{@chalkCircle.botName()} hammer decline` to wuss out."
+    ]
+    msg.send lines.join("\n")
 
     fn = => @challengeTimeout(msg)
     @activeTimeout = setTimeout(fn, @chalkCircle.challengeTimeout())
@@ -188,7 +192,7 @@ class Match
 
       choices = c.moveChoices(@chalkCircle)
       for i in [0...choices.length]
-        message += "  [#{i}] #{choices[i].name()}\n"
+        message += "  `#{@chalkCircle.botName()} hammer #{i}`: *#{choices[i].name()}*\n"
 
       moveMap[c.id()] = choices
 
@@ -215,7 +219,7 @@ class Match
       target: null
       output: (line) -> lines.push line
 
-    for uid, move in chosenMoves
+    for own uid, move of chosenMoves
       attacker = @challengerMap[uid]
       for target in @challengers
         if target isnt attacker
@@ -224,7 +228,7 @@ class Match
           move.perform moveContext
 
       if @_winner()
-        @_reportResults msg
+        @_reportResults lines
         @_endMatch()
         return
 
@@ -247,17 +251,15 @@ class Match
 
   # Internal: Report the results of the match.
   #
-  _reportResults: (msg) ->
+  _reportResults: (lines) ->
     ws = @_winner()
-    message = switch ws.length
-                when 0 then "Nobody wins. Brutal."
-                when 1 then "#{ws[0].displayName()} is the victor!"
-                else throw new Error("#{ws.length} winners?! That's not how this works.")
+    lines.push switch ws.length
+      when 0 then "Nobody wins. Brutal."
+      when 1 then "#{ws[0].displayName()} is the victor!"
+      else throw new Error("#{ws.length} winners?! That's not how this works.")
 
     # TODO award EXP and report unlocks
     # TODO respawn the defeated
-
-    msg.send message
 
   _endMatch: ->
     clearTimeout(@activeTimeout) if @activeTimeout?

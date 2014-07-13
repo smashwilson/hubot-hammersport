@@ -10,11 +10,11 @@ class Challenger
 
   id: -> @user.id
 
-  hp: -> @_storage().hp
+  hp: -> @storage.hp
 
-  damage: (amount) -> @_storage().hp -= amount
+  damage: (amount) -> @storage.hp -= amount
 
-  heal: (amount) -> @_storage().hp += amount
+  heal: (amount) -> @storage.hp += amount
 
   displayName: -> "@#{@user.name}"
 
