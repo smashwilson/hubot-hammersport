@@ -21,6 +21,17 @@ ChalkCircle = require './chalkcircle'
 
 module.exports = (robot) ->
 
+  theCircle = new ChalkCircle(robot)
+
   robot.respond /hammersport challenge (\S+)/i, (msg) ->
+    m = theCircle.startMatch(msg.message.user.name, msg.match[1])
+    m.challengeOffered msg
+
+  robot.respond /hammersport accept/i, (msg) ->
+    theCircle.withActiveMatch msg, (m) -> m.challengeAccepted msg
+
+  robot.respond /hammersport decline/i, (msg) ->
+    theCircle.withActiveMatch msg, (m) -> m.challengeDeclined msg
 
   robot.respond /hammer (\d)/i, (msg) ->
+    theCircle.withActiveMatch msg, (m) -> m.chooseMove msg

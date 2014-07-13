@@ -16,6 +16,21 @@ class ChalkCircle
 
   roundTimeout: -> 300000 # 5 minutes
 
+  # Public: Initiate a new match.
+  #
+  # challengerNames - Sanitized names of each prospective Challenger. Initiator is first.
+  #
+  startMatch: (challengerNames...) ->
+
   endMatch: (match) -> @match = null if @match is match
+
+  # Public: Invoke a callback function with the active Match, if one exists. Report an error
+  # otherwise.
+  #
+  withActiveMatch: (msg, callback) ->
+    if @match?
+      callback(@match)
+    else
+      msg.reply "You can't do that when there's no match underway!"
 
 module.exports = ChalkCircle
