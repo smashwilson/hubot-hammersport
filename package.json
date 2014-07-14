@@ -1,7 +1,7 @@
 {
   "name": "hubot-hammersport",
   "description": "Hammer-based combat simulator",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "author": "Ash Wilson <smashwilson@gmail.com>",
   "license": "MIT",
   "keywords": [
