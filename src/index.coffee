@@ -46,12 +46,10 @@ module.exports = (robot) ->
     theCircle.withActiveMatch msg, (m) -> m.chooseMove msg
 
   if process.env.HUBOT_DEBUG?
-    robot.respond /dhammer setup/i, (msg) ->
-      user = robot.brain.userForId '2',
-        name: 'someone'
-        room: 'thechalkcircle'
-      theCircle.getChallenger(user)
-      msg.reply "Ready."
+    someone = robot.brain.userForId '2',
+      name: 'someone'
+      room: 'thechalkcircle'
+    theCircle.getChallenger(someone)
 
     robot.respond /dhammer accept/i, (msg) ->
       user = robot.brain.userForName 'someone'
