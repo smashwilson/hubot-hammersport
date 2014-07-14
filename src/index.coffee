@@ -18,9 +18,16 @@ ChalkCircle = require './chalkcircle'
 
 module.exports = (robot) ->
 
+  createTestUser = ->
+    someone = robot.brain.userForId '2',
+      name: 'someone'
+      room: 'thechalkcircle'
+    theCircle.getChallenger(someone)
+
   theCircle = new ChalkCircle(robot)
 
   robot.respond /hammersport (\S+)/i, (msg) ->
+    createTestUser() if process.env.HUBOT_DEBUG?
 
     challengers = []
     for username in [msg.message.user.name, msg.match[1]]
@@ -46,11 +53,6 @@ module.exports = (robot) ->
     theCircle.withActiveMatch msg, (m) -> m.chooseMove msg
 
   if process.env.HUBOT_DEBUG?
-    someone = robot.brain.userForId '2',
-      name: 'someone'
-      room: 'thechalkcircle'
-    theCircle.getChallenger(someone)
-
     robot.respond /dhammer accept/i, (msg) ->
       user = robot.brain.userForName 'someone'
       msg.message.user = user
