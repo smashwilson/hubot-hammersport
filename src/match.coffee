@@ -229,11 +229,14 @@ class Match
 
       if @_winner()
         @_reportResults lines
+        msg.send lines.join("\n")
         @_endMatch()
         return
 
     @round += 1
     msg.send lines.join("\n")
+    @state.reset()
+    @startRound msg
 
 
   # Internal: Someone tried a command in the wrong State. Chastise them appropriately.
