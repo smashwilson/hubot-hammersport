@@ -9,7 +9,7 @@ class MoveBuilder
     @_name = null
     @_performCallback = null
     @_users = null
-    @_expReq = 0
+    @_minEXP = 0
 
   # Public: Provide your own, custom logic to create an attack that can affect anything in
   # the global game state.
@@ -27,6 +27,10 @@ class MoveBuilder
   # Public: Specify an array of user IDs who should have access to this Move.
   #
   users: (ids...) -> @_users = ids
+
+  # Public: Specify the EXP level at which this Move becomes available.
+  #
+  unlocksAt: (exp) -> @_minEXP = exp
 
   # Public: Create a move that deals damage chosen at random between a minimum and maximum.
   #
@@ -52,7 +56,7 @@ class MoveBuilder
         "#{target.displayName()} is left at #{target.hp()} HP."
       ].join(' ')
 
-  _asMove: -> new Move(@_name, @_performCallback, @_users)
+  _asMove: -> new Move(@_name, @_performCallback, @_users, @_minEXP)
 
 # A DSL used to create sets of Moves in the file specified by "HUBOT_HAMMERSPORT_ATTACKS".
 #

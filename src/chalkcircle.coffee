@@ -1,6 +1,6 @@
 Match = require './match'
 Challenger = require './challenger'
-MoveBuilder = require './movebuilder'
+MoveSetBuilder = require './movesetbuilder'
 _ = require 'underscore'
 
 # Track global state for the hammersport game: the challenger index, matches in progress, and the
@@ -20,6 +20,8 @@ class ChalkCircle
     @allChallengers = =>
       _.map robot.brain.users, (u) =>
         @getChallenger(u)
+
+
 
   botName: -> @name
 
