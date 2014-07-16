@@ -48,10 +48,16 @@ class ChallengeOfferedState extends State
       @match.startRound msg
 
   challengeDeclined: (msg) ->
-    @accepted[msg.message.user.id] = false
-    @match.matchDecline msg
+    u = msg.message.user
 
-  challengeTimeout: (msg) -> @match.matchDecline msg
+    @accepted[uid] = false
+    c = @match.chalkCircle.getChallenger(u)
+    @match.matchDecline msg, [c]
+
+  challengeTimeout: (msg) ->
+    acceptedIds = Object.keys(@accepted)
+    declined = (c for c in @match.challengers when c.id() not in acceptedIds)
+    @match.matchDecline msg, declined
 
 # Internal: A round is active and the Challengers have been issued lists of potential moves. One
 # or both Challengers have yet to select a move. When a *move* is chosen, if not all Challengers
@@ -169,8 +175,9 @@ class Match
 
   # Internal: The match was not accepted.
   #
-  matchDecline: (msg) ->
-    msg.reply "buck buck buck buck :chicken:"
+  matchDecline: (msg, declined) ->
+    d = (c.displayName() for c in declined).join(', ')
+    msg.send "#{d}: buck buck buck buck :chicken:"
     @chalkCircle.endMatch this
 
   # Internal: All Challengers have accepted. Print a message before the first round starts.
