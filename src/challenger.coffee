@@ -23,6 +23,8 @@ class Challenger
 
   displayName: -> "@#{@user.name}"
 
-  moveChoices: (chalkCircle) -> _.filter chalkCircle.moves, (m) -> m.isAvailableTo(@)
+  moveChoices: (chalkCircle) ->
+    available = _.filter chalkCircle.moves, (m) -> m.isAvailableTo(@)
+    _.sample available, 3
 
 module.exports = Challenger
