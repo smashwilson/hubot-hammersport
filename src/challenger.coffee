@@ -35,6 +35,7 @@ class Challenger
   # Public: Begin the healing process.
   #
   healOverTime: ->
+    return if @hp() >= @maxHP()
     fn = =>
       @healInt = null
       @storage.hp = Math.min(@maxHP(), @hp() + @healingRate())
