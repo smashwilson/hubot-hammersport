@@ -1,4 +1,5 @@
 Move = require './move'
+_ = require 'underscore'
 
 # A participant in the hammersportening.
 #
@@ -12,16 +13,19 @@ class Challenger
 
   hp: -> @storage.hp
 
+  exp: -> @storage.exp
+
   damage: (amount) -> @storage.hp -= amount
 
   heal: (amount) -> @storage.hp += amount
 
+  levelUp: (amount) -> @storage.exp += amount
+
   displayName: -> "@#{@user.name}"
 
-  moveChoices: (chalkCircle) -> [
-    new Move('One')
-    new Move('Two')
-    new Move('Three')
-  ]
+  moveChoices: (chalkCircle) ->
+    c = this
+    available = _.filter chalkCircle.moves, (m) -> m.isAvailableTo(c)
+    _.sample available, 3
 
 module.exports = Challenger

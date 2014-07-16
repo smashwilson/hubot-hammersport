@@ -1,5 +1,9 @@
 Match = require './match'
 Challenger = require './challenger'
+MoveSetBuilder = require './movesetbuilder'
+_ = require 'underscore'
+
+customMovesPath = process.env.HUBOT_HAMMERSPORT_MOVES
 
 # Track global state for the hammersport game: the challenger index, matches in progress, and the
 # attack index. Manages persistence to and from the brain.
@@ -13,6 +17,19 @@ class ChalkCircle
     # Initialize storage structures.
     @storage = -> robot.brain.data.hammersport ?= {}
     @storage().challengers ?= {}
+
+    # Access the full user list.
+    @allChallengers = =>
+      _.map robot.brain.users, (u) =>
+        @getChallenger(u)
+
+    # Load the Move set.
+    builder = new MoveSetBuilder()
+    if customMovesPath?
+      require(customMovesPath)(builder)
+    else
+      require('./samplemoveset')(builder)
+    @moves = builder.moves
 
   botName: -> @name
 
