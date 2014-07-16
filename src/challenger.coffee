@@ -1,4 +1,5 @@
 Move = require './move'
+_ = require 'underscore'
 
 # A participant in the hammersportening.
 #
@@ -22,10 +23,6 @@ class Challenger
 
   displayName: -> "@#{@user.name}"
 
-  moveChoices: (chalkCircle) -> [
-    new Move('One')
-    new Move('Two')
-    new Move('Three')
-  ]
+  moveChoices: (chalkCircle) -> _.filter chalkCircle.moves, (m) -> m.isAvailableTo(@)
 
 module.exports = Challenger
