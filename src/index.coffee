@@ -3,7 +3,7 @@
 #
 # Configuration:
 #   HUBOT_HAMMERSPORT_ROOMS - comma-separated list of rooms to restrict hammersport chatter to.
-#   HUBOT_HAMMERSPORT_ATTACKS - path to a file containing available attacks.
+#   HUBOT_HAMMERSPORT_MOVES - path to a file containing available moves.
 #
 # Commands:
 #   hubot hammersport <user> - Challenge another user to a duel
