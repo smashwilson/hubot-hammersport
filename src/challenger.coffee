@@ -12,9 +12,13 @@ class Challenger
 
   hp: -> @storage.hp
 
+  exp: -> @storage.exp
+
   damage: (amount) -> @storage.hp -= amount
 
   heal: (amount) -> @storage.hp += amount
+
+  levelUp: (amount) -> @storage.exp += amount
 
   displayName: -> "@#{@user.name}"
 

@@ -2,16 +2,26 @@
 #
 class Move
 
-  constructor: (@_name) ->
+  # Internal: Create a new Move. External callers should use a MoveSetBuilder to construct
+  # Moves instead.
+  #
+  constructor: (@_name, @_callback, @_userIDs, @_minEXP) ->
 
+  # Public: Access the Move's name.
+  #
   name: -> @_name
 
-  perform: (context) ->
-    context.target.damage 10
-    context.output [
-      "#{context.attacker.displayName()} uses #{@_name} for 10 damage."
-      "It's super effective!"
-      "#{context.target.displayName()} is left at #{context.target.hp()} HP."
-    ].join(' ')
+  # Public: Return true if this Move is available to a specific Challenger.
+  #
+  isAvailableTo: (challenger) ->
+    if @_userIDs?
+      return false unless challenger.id() in @_userIDs
+    return false if challenger.exp() < @_minEXP
+    true
+
+  # Internal: Invoked during a Match to execute it. See MoveSetBuilder#execute for guidance on
+  # the contents of the context object.
+  #
+  perform: (context) -> @_callback(context)
 
 module.exports = Move
