@@ -5,8 +5,7 @@ _ = require 'underscore'
 #
 class MoveBuilder
 
-  constructor: ->
-    @_name = null
+  constructor: (@_name) ->
     @_performCallback = null
     @_users = null
     @_minEXP = 0
