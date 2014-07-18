@@ -39,13 +39,13 @@ class Challenger
     fn = =>
       @healInt = null
       @storage.hp = Math.min(@maxHP(), @hp() + @healingRate())
-      @healInt = setInterval(fn, 1000) if @hp() < @maxHP()
-    @healInt = setInterval fn, 1000
+      @healInt = setTimeout(fn, 1000) if @hp() < @maxHP()
+    @healInt = setTimeout fn, 1000
 
   # Public: Halt the healing process begun with `healOverTime`. Important so you don't heal during
   # a Match!
   #
-  stopHealing: -> clearInterval(@healInt) if @healInt?
+  stopHealing: -> clearTimeout(@healInt) if @healInt?
 
   displayName: -> "@#{@user.name}"
 
