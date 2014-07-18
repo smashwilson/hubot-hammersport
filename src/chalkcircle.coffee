@@ -20,7 +20,9 @@ class ChalkCircle
 
     # Access the full user list.
     @allChallengers = =>
-      _.map robot.brain.users, (u) =>
+      ids = Object.keys(robot.brain.users())
+      _.map ids, (uid) =>
+        u = robot.brain.userForId uid
         @getChallenger(u)
 
     # Load the Move set.
