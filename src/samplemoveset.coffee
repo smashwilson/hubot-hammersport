@@ -31,8 +31,8 @@ module.exports = (b) ->
   # An attack with a fully custom execution callback. This one deals five points of damage to
   # all known Challengers.
   #
-  b.move 'Wild Flailing', (m) ->
-    m.execute ({chalkCircle, attacker, output}) ->
+  b.move 'Roundhouse Swing', (m) ->
+    m.execute ({chalkCircle, attacker, output, target}) ->
       for c in chalkCircle.allChallengers()
         if c isnt attacker
           c.damage 10
