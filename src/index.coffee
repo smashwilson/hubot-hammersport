@@ -10,11 +10,16 @@
 #   hubot hammer accept - Accept a challenge.
 #   hubot hammer decline - Decline a challenge.
 #   hubot hammer <n> - Choose an attack during a hammersport round.
+#   hubot hammeradmin respawn <user>|everyone - Respawn a chosen user at full health.
+#   hubot hammeradmin kill <user>|everyone - Instakill a chosen user.
+#   hubot hammeradmin dumpstate - Show a summary of all hammersport state. Danger: spammy.
 #
 # Author:
 #   smashwilson
 
 ChalkCircle = require './chalkcircle'
+
+ADMIN_ROLE = 'Hammondsport mayor'
 
 module.exports = (robot) ->
 
