@@ -12,7 +12,6 @@
 #   hubot hammer <n> - Choose an attack during a hammersport round.
 #   hubot hammeradmin respawn <user>|everyone - Respawn a chosen user at full health.
 #   hubot hammeradmin kill <user>|everyone - Instakill a chosen user.
-#   hubot hammeradmin setexp <user> +n|-n|n - Set a user's current EXP.
 #   hubot hammeradmin report <user> - Show a summary of hammersport state. Danger: spammy.
 #
 # Author:
@@ -102,8 +101,6 @@ module.exports = (robot) ->
 
     c.kill() for c in challengers
     msg.reply reportAction challengers.length, 'killed'
-
-  robot.respond /hammeradmin setexp @?(\w+) ([+-]?\d+)/i, (msg) ->
 
   robot.respond /hammeradmin report(?: @?(\w+))?/i, (msg) ->
     return unless isAdmin(msg)
