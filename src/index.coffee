@@ -47,6 +47,11 @@ module.exports = (robot) ->
           Notice that they have to speak first, for me to notice them."
         return
 
+    for challenger in challengers
+      unless challenger.hp() > 0
+        msg.reply "#{challenger.displayName()} is dead!"
+        return
+
     m = theCircle.startMatch(challengers)
     m.challengeOffered msg
 
