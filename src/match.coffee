@@ -184,7 +184,7 @@ class Match
   #
   itBegins: (msg) ->
     clearTimeout(@activeTimeout) if @activeTimeout?
-    c.stopHealing() for c in @challengers
+    c.startCombat() for c in @challengers
     msg.send 'IT BEGINS!'
 
   # Internal: Choose the next batch of attacks from the attack registry and report them to each
@@ -274,11 +274,7 @@ class Match
 
   _endMatch: ->
     clearTimeout(@activeTimeout) if @activeTimeout?
-    for c in @challengers
-      if c.hp() <= 0
-        c.respawn()
-      else
-        c.healOverTime()
+    c.stopCombat() for c in @challengers
 
     @chalkCircle.endMatch this
 
