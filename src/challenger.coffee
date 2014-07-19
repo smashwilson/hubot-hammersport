@@ -39,7 +39,7 @@ class Challenger
 
   # Public: time, in milliseconds, that must elapse before automatically respawning.
   #
-  reviveTime: -> 5000 # 900000 # 15 minutes
+  reviveTime: -> 900000 # 15 minutes
 
   damage: (amount) -> @storage.hp -= amount
 
@@ -76,7 +76,7 @@ class Challenger
     fn = =>
       @storage.hp = Math.min(@maxHP(), @hp() + @healingRate())
       @healOverTime()
-    healTimeouts[@id()] = setTimeout fn, 1000
+    healTimeouts[@id()] = setTimeout fn, 5000
 
   # Public: Halt the healing process begun with `healOverTime`. Important so you don't heal during
   # a Match!
