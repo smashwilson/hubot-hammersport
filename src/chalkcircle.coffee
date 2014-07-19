@@ -10,20 +10,11 @@ customMovesPath = process.env.HUBOT_HAMMERSPORT_MOVES
 #
 class ChalkCircle
 
-  constructor: (robot) ->
-    @name = robot.name
+  constructor: (@robot) ->
     @match = null
 
     # Initialize storage structures.
-    @storage = -> robot.brain.data.hammersport ?= {}
     @storage().challengers ?= {}
-
-    # Access the full user list.
-    @allChallengers = =>
-      ids = Object.keys(robot.brain.users())
-      _.map ids, (uid) =>
-        u = robot.brain.userForId uid
-        @getChallenger(u)
 
     # Load the Move set.
     builder = new MoveSetBuilder()
@@ -33,7 +24,15 @@ class ChalkCircle
       require('./samplemoveset')(builder)
     @moves = builder.moves
 
-  botName: -> @name
+  storage: -> @robot.brain.data.hammersport ?= {}
+
+  allChallengers: ->
+    ids = Object.keys(@robot.brain.users())
+    _.map ids, (uid) =>
+      u = @robot.brain.userForId uid
+      @getChallenger(u)
+
+  botName: -> @robot.name
 
   challengeTimeout: -> 300000 # 5 minutes
 
