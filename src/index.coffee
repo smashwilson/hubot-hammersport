@@ -12,14 +12,16 @@
 #   hubot hammer <n> - Choose an attack during a hammersport round.
 #   hubot hammeradmin respawn <user>|everyone - Respawn a chosen user at full health.
 #   hubot hammeradmin kill <user>|everyone - Instakill a chosen user.
-#   hubot hammeradmin dumpstate - Show a summary of all hammersport state. Danger: spammy.
+#   hubot hammeradmin setexp <user> +n|-n|n - Set a user's current EXP.
+#   hubot hammeradmin report <user> - Show a summary of hammersport state. Danger: spammy.
 #
 # Author:
 #   smashwilson
 
 ChalkCircle = require './chalkcircle'
+_ = require 'underscore'
 
-ADMIN_ROLE = 'Hammondsport mayor'
+ADMIN_ROLE = 'hammondsport mayor'
 
 module.exports = (robot) ->
 
