@@ -3,7 +3,7 @@ _ = require 'underscore'
 moment = require 'moment'
 
 respawnTimeouts = {}
-healTimeouts = {}
+healIntervals = {}
 
 # A participant in the hammersportening.
 #
@@ -19,11 +19,12 @@ class Challenger
     if @storage.nextRespawn? and ! respawnTimeouts[@id()]
       msDelay = moment(@storage.nextRespawn).diff(moment())
       fn = => @respawn()
-      respawnTimeouts[@id] = setTimeout fn, msDelay
+      respawnTimeouts[@id()] = setTimeout fn, msDelay
 
     # Reset the healing timeout if necessary.
-    if @hp() > 0 and @hp() < @maxHP() and ! @storage.inCombat and ! healTimeouts[@id()]
-      @healOverTime()
+    unless healIntervals[@id()]?
+      fn = => @healOverTime()
+      healIntervals[@id()] = setInterval(fn, 5000)
 
   id: -> @user.id
 
@@ -47,6 +48,14 @@ class Challenger
 
   levelUp: (amount) -> @storage.exp += amount
 
+  # Public: Simple predicate to determine if this Challenger is alive.
+  #
+  isAlive: -> @hp() > 0
+
+  # Public: Predicate to determine if this Challenger is in an active Match or not.
+  #
+  isInCombat: -> @storage.inCombat
+
   # Public: Revive this Challenger with full HP.
   #
   respawn: ->
@@ -68,31 +77,25 @@ class Challenger
     @storage.nextRespawn = moment().add('ms', @reviveTime()).valueOf()
     respawnTimeouts[@id()] = setTimeout fn, @reviveTime()
 
-  # Public: Begin the healing process.
+  # Internal: Invoked every second for each known Challenger. Heal at a fixed rate if applicable.
   #
   healOverTime: ->
-    healTimeouts[@id()] = null
+    return unless @isAlive()
+    return if @isInCombat()
     return if @hp() >= @maxHP()
-    fn = =>
-      @storage.hp = Math.min(@maxHP(), @hp() + @healingRate())
-      @healOverTime()
-    healTimeouts[@id()] = setTimeout fn, 5000
 
-  # Public: Halt the healing process begun with `healOverTime`. Important so you don't heal during
-  # a Match!
+    @storage.hp = Math.min(@maxHP(), @hp() + @healingRate())
+
+  # Public: Mark this Challenger as being in an active Match.
   #
   startCombat: ->
-    clearTimeout(healTimeouts[@id()]) if healTimeouts[@id()]?
     @storage.inCombat = true
 
   # Public: The Match has ended. Resume healing or schedule a respawn.
   #
   stopCombat: ->
     @storage.inCombat = false
-    if @hp() > 0
-      @healOverTime()
-    else
-      @kill()
+    @kill() if @hp() <= 0
 
   displayName: -> "@#{@user.name}"
 
