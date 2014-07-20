@@ -24,7 +24,7 @@ class Challenger
     # Reset the healing timeout if necessary.
     unless healIntervals[@id()]?
       fn = => @healOverTime()
-      healIntervals[@id()] = setInterval(fn, 5000)
+      healIntervals[@id()] = setInterval(fn, 10000)
 
   id: -> @user.id
 
