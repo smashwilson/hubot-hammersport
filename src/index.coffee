@@ -114,7 +114,7 @@ module.exports = (robot) ->
     lines = []
     for c in sorted
       line = "*#{c.displayName()}*: #{c.hp()}/#{c.maxHP()} HP #{c.exp()} EXP"
-      if c.nextRespawn()?
+      unless c.isAlive()
         line += " _will respawn #{c.nextRespawn().fromNow()}_"
       lines.push line
 
