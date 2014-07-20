@@ -47,8 +47,11 @@ module.exports = (robot) ->
         return
 
     for challenger in challengers
-      unless challenger.hp() > 0
+      unless challenger.isAlive()
         msg.reply "#{challenger.displayName()} is dead!"
+        return
+      if challenger.isInCombat()
+        msg.reply "#{challenger.displayName()} is already fighting!"
         return
 
     m = theCircle.startMatch(challengers)
