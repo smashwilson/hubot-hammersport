@@ -16,7 +16,7 @@
     "url": "https://github.com/smashwilson/hubot-hammersport/issues"
   },
   "dependencies": {
-    "coffee-script": "~1.6",
+    "coffee-script": "~1.12.7",
     "moment": "^2.7.0",
     "underscore": "^1.6.0"
   },
